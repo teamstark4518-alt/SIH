@@ -46,14 +46,21 @@
     --radius: 0.75rem;
 
     /* Sidebar Colors */
-    --sidebar-background: 24 100% 88%; /* Light orange sidebar */
-    --sidebar-foreground: 222 15% 35%;
-    --sidebar-primary: 24 95% 53%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 24 100% 82%;
-    --sidebar-accent-foreground: 222 15% 35%;
-    --sidebar-border: 24 50% 85%;
-    --sidebar-ring: 24 95% 53%;
+    --sidebar-background: 0 100% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
 
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -83,7 +90,13 @@
   }
 }
 
+/* Make root fill viewport (important for correct 100vh behavior) */
 @layer base {
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+  }
+
   * {
     @apply border-border;
   }
@@ -122,5 +135,53 @@
 
   .slide-in {
     @apply animate-in slide-in-from-right-4 duration-300;
+  }
+
+  /* Layout: fixed sidebar + independent main pane scroll */
+  /* ---------- CHANGE POINT A: sidebar width ------ */
+  /* default: 18rem (w-72). To change, update `--sidebar-w` here. */
+  :root {
+    --sidebar-w: 18rem;
+  }
+
+  .app {
+    display: flex;
+    height: 100vh;        /* full viewport */
+    overflow: hidden;     /* prevent body scroll; inner panes scroll */
+  }
+.sidebar {
+  position: fixed;
+  top: 0;              /* stays from very top */
+  left: 0;
+  width: var(--sidebar-w, 18rem); /* default 18rem, can adjust */
+  height: 100vh;       /* full viewport height */
+  overflow: auto;
+  z-index: 20;
+
+  background: hsl(var(--sidebar-background));
+  color: hsl(var(--sidebar-foreground));
+  border-right: 1px solid hsl(var(--sidebar-border));
+  box-shadow: var(--shadow-card);
+}
+
+.main {
+  /* REMOVE margin-left: var(--sidebar-w) here, wrapper already handles it */
+  padding: 1.5rem;
+  min-height: 100vh;
+  overflow: auto;
+  background: hsl(var(--background));
+}
+
+
+
+  /* responsive: collapse the fixed behaviour on small screens */
+  @media (max-width: 900px) {     /* ---------- CHANGE POINT C: responsive breakpoint -------- */
+    .sidebar {
+      position: relative;
+      width: 100%;
+      height: auto;
+      border-right: 0;
+      box-shadow: none;
+    }
   }
 }
